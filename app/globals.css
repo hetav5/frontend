@@ -1,0 +1,192 @@
+@import "tailwindcss";
+
+/* ============================================================
+   CREMA — CRM design system
+   Warm coffee identity, applied with the restraint of a real
+   product surface (think Linear/Attio, warm theme). Crisp
+   borders, near-solid surfaces, a proper data-viz palette.
+   ============================================================ */
+
+@theme {
+  /* Espresso canvas */
+  --color-espresso-975: #0f0a07;
+  --color-espresso-950: #150e09;
+  --color-espresso-925: #1a120c;
+  --color-espresso-900: #20160f;
+  --color-espresso-850: #281c13;
+  --color-espresso-800: #312217;
+  --color-espresso-700: #3e2d1f;
+  --color-espresso-600: #503b29;
+
+  /* Crema — creams / off-whites */
+  --color-crema-50: #fbf6ee;
+  --color-crema-100: #f4ead9;
+  --color-crema-200: #e6d4ba;
+  --color-crema-300: #cbb289;
+  --color-crema-400: #a98f63;
+
+  /* Caramel — primary accent */
+  --color-caramel-300: #f0c489;
+  --color-caramel-400: #e6ac63;
+  --color-caramel-500: #d9954a;
+  --color-caramel-600: #bd7c33;
+  --color-caramel-700: #97601f;
+
+  --color-clay-400: #d98b6a;
+  --color-clay-500: #c7704c;
+
+  /* Functional */
+  --color-leaf-500: #6cae73;
+  --color-berry-500: #cf6178;
+  --color-sky-500: #6aa9d9;
+
+  /* Channel identity */
+  --color-ch-whatsapp: #4bb778;
+  --color-ch-sms: #6aa9d9;
+  --color-ch-email: #e6ac63;
+  --color-ch-rcs: #b48bd9;
+
+  /* Data-viz palette (multi-hue, balanced for charts) */
+  --color-viz-1: #e6ac63;
+  --color-viz-2: #d98b6a;
+  --color-viz-3: #b48bd9;
+  --color-viz-4: #6aa9d9;
+  --color-viz-5: #6cae73;
+  --color-viz-6: #cf6178;
+
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+
+  --radius-card: 0.9rem;
+
+  --animate-rise: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pulse-soft: pulse-soft 1.8s ease-in-out infinite;
+  --animate-blink: blink 1s steps(2, start) infinite;
+  --animate-sheen: sheen 1.6s ease-in-out infinite;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+@keyframes blink {
+  to { opacity: 0; }
+}
+@keyframes sheen {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+:root {
+  --bg: var(--color-espresso-975);
+  --fg: var(--color-crema-100);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Clean app canvas — a single restrained warm wash at the top,
+   not the all-over glow that screams "AI demo". */
+.crema-canvas {
+  background-color: var(--color-espresso-975);
+  background-image:
+    radial-gradient(70rem 36rem at 78% -22%, rgba(217, 149, 74, 0.07), transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Surfaces — near-solid, crisp 1px border, soft elevation. */
+.surface {
+  background-color: color-mix(in srgb, var(--color-espresso-900) 92%, transparent);
+  border: 1px solid rgba(230, 212, 186, 0.08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+.surface-2 {
+  background-color: color-mix(in srgb, var(--color-espresso-850) 90%, transparent);
+  border: 1px solid rgba(230, 212, 186, 0.1);
+}
+.hover-lift {
+  transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+}
+.hover-lift:hover {
+  border-color: rgba(230, 172, 99, 0.32);
+  background-color: color-mix(in srgb, var(--color-espresso-850) 92%, transparent);
+}
+
+.btn-caramel {
+  background: linear-gradient(180deg, var(--color-caramel-400), var(--color-caramel-600));
+  color: var(--color-espresso-975);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.22) inset, 0 6px 16px -8px rgba(230, 172, 99, 0.5);
+  transition: filter 0.16s ease, transform 0.12s ease;
+}
+.btn-caramel:hover { filter: brightness(1.06); }
+.btn-caramel:active { transform: translateY(0.5px); }
+
+.ring-focus:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-espresso-975), 0 0 0 4px rgba(230, 172, 99, 0.55);
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(230, 212, 186, 0.04) 25%,
+    rgba(230, 212, 186, 0.09) 37%,
+    rgba(230, 212, 186, 0.04) 63%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-sheen);
+}
+
+/* Scrollbar */
+* { scrollbar-width: thin; scrollbar-color: rgba(203, 178, 137, 0.22) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb {
+  background: rgba(203, 178, 137, 0.2);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: rgba(203, 178, 137, 0.34); background-clip: padding-box; }
+
+/* Chat prose */
+.chat-prose p { margin: 0 0 0.6em; }
+.chat-prose p:last-child { margin-bottom: 0; }
+.chat-prose strong { color: var(--color-crema-50); font-weight: 600; }
+.chat-prose ul { margin: 0.4em 0; padding-left: 1.1em; list-style: disc; }
+.chat-prose li { margin: 0.2em 0; }
+.chat-prose code {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85em;
+  background: rgba(230, 172, 99, 0.12);
+  color: var(--color-caramel-300);
+  padding: 0.1em 0.4em;
+  border-radius: 0.4em;
+}
+
+/* Recharts cosmetic overrides */
+.recharts-cartesian-grid line { stroke: rgba(230, 212, 186, 0.06); }
+.recharts-text { fill: rgba(203, 178, 137, 0.55); font-size: 11px; }
+.recharts-tooltip-wrapper:focus { outline: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
