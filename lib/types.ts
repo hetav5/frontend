@@ -5,7 +5,7 @@
 
 export type Channel = "whatsapp" | "sms" | "email" | "rcs";
 
-export type CampaignStatus = "DRAFT" | "SENDING" | "SENT" | "FAILED";
+export type CampaignStatus = "DRAFT" | "APPROVED" | "SENDING" | "SENT" | "FAILED";
 
 // ---- SSE events from POST /agent/stream ----
 export type AgentEvent =

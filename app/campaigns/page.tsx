@@ -1,20 +1,40 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Plus } from "lucide-react";
 import { getCampaigns } from "@/lib/api";
 import { CHANNEL_META } from "@/lib/channel";
 import { dateShort } from "@/lib/format";
 import { PageHeader } from "@/components/ui/page-header";
-import type { CampaignStatus } from "@/lib/types";
+import type { CampaignStatus, CampaignSummary } from "@/lib/types";
 
-const STATUS_STYLE: Record<CampaignStatus, { label: string; cls: string }> = {
+const STATUS_STYLE: Record<string, { label: string; cls: string }> = {
   DRAFT: { label: "Draft", cls: "border-crema-200/15 bg-crema-200/5 text-crema-300/60" },
+  APPROVED: { label: "Approved", cls: "border-clay-400/30 bg-clay-400/10 text-clay-400" },
   SENDING: { label: "Sending", cls: "border-caramel-400/30 bg-caramel-400/10 text-caramel-300" },
   SENT: { label: "Sent", cls: "border-leaf-500/30 bg-leaf-500/10 text-leaf-500" },
   FAILED: { label: "Failed", cls: "border-berry-500/30 bg-berry-500/10 text-berry-500" },
 };
 
-export default async function CampaignsPage() {
-  const campaigns = await getCampaigns();
+function statusStyle(status: CampaignStatus | string) {
+  return (
+    STATUS_STYLE[status] ?? {
+      label: status,
+      cls: "border-crema-200/15 bg-crema-200/5 text-crema-300/60",
+    }
+  );
+}
+
+export default function CampaignsPage() {
+  const [campaigns, setCampaigns] = useState<CampaignSummary[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getCampaigns()
+      .then(setCampaigns)
+      .catch((e) => setError(e instanceof Error ? e.message : String(e)));
+  }, []);
 
   return (
     <div className="flex flex-col">
@@ -33,10 +53,36 @@ export default async function CampaignsPage() {
       />
 
       <div className="flex flex-col gap-2.5 p-5 sm:p-8">
-        {campaigns.map((c) => {
+        {error && (
+          <div className="surface rounded-card px-4 py-3 text-[13px] text-clay-400">
+            Couldn&apos;t load campaigns: {error}
+          </div>
+        )}
+
+        {!campaigns && !error &&
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="skeleton h-[74px] rounded-card" />
+          ))}
+
+        {campaigns && campaigns.length === 0 && !error && (
+          <div className="surface flex flex-col items-center gap-3 rounded-card px-6 py-12 text-center">
+            <p className="text-[14px] text-crema-200/70">No campaigns yet.</p>
+            <p className="max-w-sm text-[12.5px] text-crema-300/45">
+              Head to the Campaign Agent and describe a goal — the agent will stage your first one.
+            </p>
+            <Link
+              href="/"
+              className="btn-caramel ring-focus mt-1 inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[13px] font-semibold"
+            >
+              <Plus size={15} strokeWidth={2.4} /> New campaign
+            </Link>
+          </div>
+        )}
+
+        {campaigns?.map((c) => {
           const meta = CHANNEL_META[c.channel];
           const Icon = meta.Icon;
-          const status = STATUS_STYLE[c.status];
+          const status = statusStyle(c.status);
           return (
             <Link
               key={c.id}
