@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   Coffee,
   LayoutDashboard,
@@ -11,9 +11,12 @@ import {
   Users,
   Menu,
   X,
+  LogOut,
+  Loader2,
   type LucideIcon,
 } from "lucide-react";
 import { IS_MOCK } from "@/lib/api";
+import { getUser, isAuthed, logout } from "@/lib/auth";
 
 const NAV: { href: string; label: string; Icon: LucideIcon; hint: string }[] = [
   { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard, hint: "Overview & metrics" },
@@ -29,7 +32,46 @@ function isActive(pathname: string, href: string) {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  const isLoginRoute = pathname === "/login";
+
+  // Route guard: redirect unauthenticated users to /login (the login route and
+  // MOCK mode are always allowed through).
+  useEffect(() => {
+    if (isLoginRoute) {
+      setReady(true);
+      return;
+    }
+    if (!isAuthed()) {
+      router.replace("/login");
+      return;
+    }
+    setReady(true);
+  }, [pathname, isLoginRoute, router]);
+
+  // The login page renders without the workspace chrome.
+  if (isLoginRoute) return <>{children}</>;
+
+  if (!ready) {
+    return (
+      <div className="flex min-h-dvh w-full items-center justify-center">
+        <Loader2 size={22} className="animate-spin text-crema-300/40" />
+      </div>
+    );
+  }
+
+  const user = getUser();
+  const initials = user
+    ? user.name
+        .split(" ")
+        .map((p) => p[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase()
+    : "AD";
 
   return (
     <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-[1600px]">
@@ -108,9 +150,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex items-center gap-2.5 px-2">
             <span className="grid h-7 w-7 place-items-center rounded-full bg-crema-200/8 text-[11px] font-semibold text-caramel-300">
-              AD
+              {initials}
             </span>
-            <span className="text-[11.5px] text-crema-300/50">Admin · Crema Co.</span>
+            <span className="flex min-w-0 flex-col leading-tight">
+              <span className="truncate text-[11.5px] font-medium text-crema-100">
+                {user?.name ?? "Admin"}
+              </span>
+              <span className="truncate text-[10.5px] text-crema-300/40">
+                {user?.email ?? "Crema Co."}
+              </span>
+            </span>
+            {!IS_MOCK && (
+              <button
+                onClick={logout}
+                title="Sign out"
+                aria-label="Sign out"
+                className="ml-auto grid h-7 w-7 place-items-center rounded-lg text-crema-300/45 transition hover:bg-crema-200/[0.06] hover:text-clay-400"
+              >
+                <LogOut size={14} />
+              </button>
+            )}
           </div>
         </div>
       </aside>

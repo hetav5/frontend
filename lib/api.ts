@@ -28,11 +28,39 @@ import type {
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "";
 export const IS_MOCK = API_BASE.length === 0;
 
+// Auth token storage keys (owned here; lib/auth.ts reuses them).
+export const TOKEN_KEY = "crema_token";
+export const USER_KEY = "crema_user";
+
+function getToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function authHeaders(): Record<string, string> {
+  const t = getToken();
+  return t ? { Authorization: `Bearer ${t}` } : {};
+}
+
+/** On a 401, drop the stale session and bounce to the login page. */
+function handleUnauthorized(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+  if (!window.location.pathname.startsWith("/login")) {
+    window.location.href = "/login";
+  }
+}
+
 async function getJSON<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { Accept: "application/json" },
+    headers: { Accept: "application/json", ...authHeaders() },
     cache: "no-store",
   });
+  if (res.status === 401) {
+    handleUnauthorized();
+    throw new Error("Unauthorized");
+  }
   if (!res.ok) throw new Error(`${res.status} ${res.statusText} — ${path}`);
   return res.json() as Promise<T>;
 }
@@ -66,7 +94,11 @@ export async function streamAgent(
 
   const res = await fetch(`${API_BASE}/agent/stream`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+      ...authHeaders(),
+    },
     body: JSON.stringify({ ...body, conversationId }),
     signal,
   });
@@ -159,7 +191,7 @@ export async function launchCampaign(id: string): Promise<LaunchResult> {
   }
   const res = await fetch(`${API_BASE}/campaigns/${id}/launch`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeaders() },
   });
   if (!res.ok) throw new Error(`Launch failed: ${res.status}`);
   return res.json() as Promise<LaunchResult>;
