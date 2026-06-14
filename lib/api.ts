@@ -14,12 +14,14 @@ import {
   mockCampaignDetail,
   mockCustomerPage,
 } from "./mock";
+import { mockDashboard } from "./mock-dashboard";
 import type {
   AgentEvent,
   CampaignAnalytics,
   CampaignDetail,
   CampaignSummary,
   CustomerPage,
+  DashboardData,
   LaunchResult,
 } from "./types";
 
@@ -163,8 +165,17 @@ export async function launchCampaign(id: string): Promise<LaunchResult> {
   return res.json() as Promise<LaunchResult>;
 }
 
+// ---- Dashboard ----
+export async function getDashboard(): Promise<DashboardData> {
+  if (IS_MOCK) {
+    await new Promise((r) => setTimeout(r, 200));
+    return mockDashboard();
+  }
+  return getJSON<DashboardData>("/dashboard");
+}
+
 // ---- Customers ----
-export async function getCustomers(cursor: string | null, limit = 12): Promise<CustomerPage> {
+export async function getCustomers(cursor: string | null, limit = 50): Promise<CustomerPage> {
   if (IS_MOCK) {
     await new Promise((r) => setTimeout(r, 250));
     return mockCustomerPage(cursor, limit);

@@ -2,6 +2,7 @@
 // Replace with real API reads once the backend exposes aggregates.
 
 import { HEX } from "./colors";
+import type { DashboardData } from "./types";
 
 function seeded(n: number) {
   const x = Math.sin(n * 51.27) * 10000;
@@ -75,7 +76,7 @@ export interface Kpi {
 export const kpis: Kpi[] = [
   {
     label: "Attributed revenue",
-    value: "$48.2k",
+    value: "₹48.2k",
     delta: 12.4,
     spark: [12, 14, 13, 18, 17, 22, 26, 25, 29, 33],
   },
@@ -114,3 +115,21 @@ export const activity: ActivityItem[] = [
   { id: "a4", kind: "draft", title: "Draft staged by agent", meta: "VIP early-access · SMS", when: "3h ago" },
   { id: "a5", kind: "order", title: "8 orders attributed", meta: "Cold brew season teaser", when: "Yesterday" },
 ];
+
+// MOCK-mode payload matching the live /dashboard contract (DashboardData).
+// Used by api.getDashboard() when no NEXT_PUBLIC_API_BASE_URL is set.
+export function mockDashboard(): DashboardData {
+  return {
+    kpis: [
+      { key: "revenue", label: "Total revenue", value: 482000, format: "currency", delta: 12.4, spark: [12, 14, 13, 18, 17, 22] },
+      { key: "orders", label: "Total orders", value: 12150, format: "number", delta: 8.1, spark: [40, 38, 46, 44, 52, 58] },
+      { key: "delivered", label: "Messages delivered", value: 12150, format: "number", delta: 8.1, spark: [40, 38, 46, 44, 52, 58, 55, 61, 64, 70] },
+      { key: "campaigns", label: "Active campaigns", value: 7, format: "number", delta: -2.0, spark: [9, 8, 8, 7, 7, 6, 7, 8, 7, 7] },
+    ],
+    revenueSeries: revenueSeries.map((r) => ({ label: r.label, revenue: r.revenue, orders: r.campaigns })),
+    audienceSplit: audienceSplit.map((s) => ({ name: s.name, value: s.value })),
+    engagementSeries,
+    channelPerf: channelPerf.map((c) => ({ channel: c.channel, key: c.key, sent: c.sent, ctr: c.ctr })),
+    activity,
+  };
+}

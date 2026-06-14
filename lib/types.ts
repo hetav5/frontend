@@ -119,6 +119,60 @@ export interface CustomerPage {
   nextCursor: string | null;
 }
 
+// ---- Dashboard ----
+export type KpiFormat = "currency" | "number" | "percent";
+
+export interface DashboardKpi {
+  key: string;
+  label: string;
+  value: number;
+  format: KpiFormat;
+  delta: number;
+  spark: number[];
+}
+
+export interface RevenuePoint {
+  label: string;
+  revenue: number;
+  orders: number;
+}
+
+export interface EngagementPoint {
+  day: string;
+  delivered: number;
+  opened: number;
+  clicked: number;
+}
+
+export interface SegmentSlice {
+  name: string;
+  value: number;
+}
+
+export interface ChannelPerfPoint {
+  channel: string;
+  key: Channel | string;
+  sent: number;
+  ctr: number;
+}
+
+export interface DashboardActivityItem {
+  id: string;
+  kind: "launch" | "draft" | "delivered" | "order";
+  title: string;
+  meta: string;
+  when: string;
+}
+
+export interface DashboardData {
+  kpis: DashboardKpi[];
+  revenueSeries: RevenuePoint[];
+  audienceSplit: SegmentSlice[];
+  engagementSeries: EngagementPoint[];
+  channelPerf: ChannelPerfPoint[];
+  activity: DashboardActivityItem[];
+}
+
 // ---- Conversation reload ----
 export type MessagePart =
   | { type: "text"; text: string }

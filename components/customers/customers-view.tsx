@@ -17,7 +17,7 @@ export function CustomersView() {
   const load = useCallback(async (c: string | null) => {
     setLoading(true);
     try {
-      const page = await getCustomers(c, 12);
+      const page = await getCustomers(c, 50);
       setItems((prev) => (c === null ? page.items : [...prev, ...page.items]));
       setCursor(page.nextCursor);
       setDone(page.nextCursor === null);

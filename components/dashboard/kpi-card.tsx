@@ -1,9 +1,15 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { Sparkline } from "@/components/charts/chart-kit";
 import { HEX } from "@/lib/colors";
-import type { Kpi } from "@/lib/mock-dashboard";
 
-export function KpiCard({ kpi }: { kpi: Kpi }) {
+export interface KpiCardModel {
+  label: string;
+  value: string;
+  delta: number;
+  spark: number[];
+}
+
+export function KpiCard({ kpi }: { kpi: KpiCardModel }) {
   const up = kpi.delta >= 0;
   const color = up ? HEX.leaf : HEX.berry;
   return (

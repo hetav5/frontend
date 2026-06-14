@@ -1,14 +1,14 @@
 export const money = (n: number) =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     maximumFractionDigits: 0,
   }).format(n);
 
 export const compact = (n: number) =>
-  new Intl.NumberFormat("en-US", { notation: "compact" }).format(n);
+  new Intl.NumberFormat("en-IN", { notation: "compact" }).format(n);
 
-export const num = (n: number) => new Intl.NumberFormat("en-US").format(n);
+export const num = (n: number) => new Intl.NumberFormat("en-IN").format(n);
 
 export function daysAgo(d: number): string {
   if (d === 0) return "today";

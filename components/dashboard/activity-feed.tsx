@@ -1,14 +1,17 @@
 import { FileEdit, PackageCheck, Send, ShoppingBag, type LucideIcon } from "lucide-react";
-import { activity, type ActivityItem } from "@/lib/mock-dashboard";
+import type { DashboardActivityItem } from "@/lib/types";
 
-const KIND: Record<ActivityItem["kind"], { Icon: LucideIcon; color: string }> = {
+const KIND: Record<DashboardActivityItem["kind"], { Icon: LucideIcon; color: string }> = {
   launch: { Icon: Send, color: "var(--color-caramel-400)" },
   draft: { Icon: FileEdit, color: "var(--color-ch-rcs)" },
   delivered: { Icon: PackageCheck, color: "var(--color-ch-sms)" },
   order: { Icon: ShoppingBag, color: "var(--color-leaf-500)" },
 };
 
-export function ActivityFeed() {
+export function ActivityFeed({ activity }: { activity: DashboardActivityItem[] }) {
+  if (!activity.length) {
+    return <p className="py-6 text-center text-[12px] text-crema-300/40">No campaign activity yet.</p>;
+  }
   return (
     <ul className="flex flex-col">
       {activity.map((a, i) => {

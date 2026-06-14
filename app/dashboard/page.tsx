@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
@@ -8,18 +9,49 @@ import { KpiCard } from "@/components/dashboard/kpi-card";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { AreaTrend, BarGroups, Donut, MultiLine } from "@/components/charts/chart-kit";
 import { HEX } from "@/lib/colors";
-import { num } from "@/lib/format";
-import {
-  audienceSplit,
-  channelPerf,
-  engagementSeries,
-  kpis,
-  revenueSeries,
-} from "@/lib/mock-dashboard";
+import { money, num } from "@/lib/format";
+import { getDashboard } from "@/lib/api";
+import type { DashboardData, DashboardKpi } from "@/lib/types";
 
-const totalAudience = audienceSplit.reduce((s, x) => s + x.value, 0);
+const SEGMENT_COLOR: Record<string, string> = {
+  Active: HEX.viz[4],
+  Lapsed: HEX.viz[1],
+  VIP: HEX.viz[0],
+  New: HEX.viz[3],
+};
+const CHANNEL_COLOR: Record<string, string> = {
+  whatsapp: HEX.whatsapp,
+  email: HEX.email,
+  sms: HEX.sms,
+  rcs: HEX.rcs,
+};
+
+function kpiValue(k: DashboardKpi): string {
+  if (k.format === "currency") return money(k.value);
+  if (k.format === "percent") return `${k.value}%`;
+  return num(k.value);
+}
 
 export default function DashboardPage() {
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getDashboard()
+      .then(setData)
+      .catch((e) => setError(String(e)));
+  }, []);
+
+  const totalAudience = data?.audienceSplit.reduce((s, x) => s + x.value, 0) ?? 0;
+  const audienceSplit = (data?.audienceSplit ?? []).map((s) => ({
+    ...s,
+    color: SEGMENT_COLOR[s.name] ?? HEX.viz[2],
+  }));
+  const channelPerf = (data?.channelPerf ?? []).map((c) => ({
+    ...c,
+    color: CHANNEL_COLOR[c.key] ?? HEX.caramel400,
+  }));
+
   return (
     <div className="flex flex-col">
       <PageHeader
@@ -38,27 +70,42 @@ export default function DashboardPage() {
       />
 
       <div className="flex flex-col gap-4 p-5 sm:p-8">
+        {error && (
+          <div className="surface rounded-card px-4 py-3 text-[13px] text-clay-400">
+            Couldn&apos;t load dashboard data: {error}
+          </div>
+        )}
+
         {/* KPIs */}
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {kpis.map((k) => (
-            <KpiCard key={k.label} kpi={k} />
-          ))}
+          {data
+            ? data.kpis.map((k) => (
+                <KpiCard
+                  key={k.key}
+                  kpi={{ label: k.label, value: kpiValue(k), delta: k.delta, spark: k.spark }}
+                />
+              ))
+            : Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton h-[132px] rounded-card" />)}
         </div>
 
         {/* Revenue + audience split */}
         <div className="grid gap-4 lg:grid-cols-3">
           <Panel
             className="lg:col-span-2"
-            title="Attributed revenue"
-            subtitle="Revenue closed within 7 days of a send"
+            title="Revenue"
+            subtitle="Total order revenue by month"
             action={<span className="text-[11.5px] text-crema-300/40">Last 6 months</span>}
           >
-            <AreaTrend
-              data={revenueSeries}
-              dataKey="revenue"
-              xKey="label"
-              formatter={(v) => `$${num(Number(v))}`}
-            />
+            {data ? (
+              <AreaTrend
+                data={data.revenueSeries}
+                dataKey="revenue"
+                xKey="label"
+                formatter={(v) => `₹${num(Number(v))}`}
+              />
+            ) : (
+              <div className="skeleton h-[240px] rounded-card" />
+            )}
           </Panel>
 
           <Panel title="Audience split" subtitle={`${num(totalAudience)} total customers`}>
@@ -104,19 +151,23 @@ export default function DashboardPage() {
               </div>
             }
           >
-            <MultiLine
-              data={engagementSeries}
-              xKey="day"
-              series={[
-                { key: "delivered", label: "Delivered", color: HEX.caramel400 },
-                { key: "opened", label: "Opened", color: HEX.clay400 },
-                { key: "clicked", label: "Clicked", color: HEX.leaf },
-              ]}
-            />
+            {data ? (
+              <MultiLine
+                data={data.engagementSeries}
+                xKey="day"
+                series={[
+                  { key: "delivered", label: "Delivered", color: HEX.caramel400 },
+                  { key: "opened", label: "Opened", color: HEX.clay400 },
+                  { key: "clicked", label: "Clicked", color: HEX.leaf },
+                ]}
+              />
+            ) : (
+              <div className="skeleton h-[240px] rounded-card" />
+            )}
           </Panel>
 
           <Panel title="Recent activity">
-            <ActivityFeed />
+            <ActivityFeed activity={data?.activity ?? []} />
           </Panel>
         </div>
 
