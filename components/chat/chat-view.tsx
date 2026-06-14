@@ -6,6 +6,7 @@ import { useAgentChat } from "./use-agent-chat";
 import { Message } from "./message";
 import { Composer } from "./composer";
 import { TypingIndicator } from "./typing-indicator";
+import { AdvisorPanel } from "./advisor-panel";
 
 const SUGGESTIONS = [
   { title: "Win back lapsed buyers", sub: "haven’t ordered in 60+ days" },
@@ -60,7 +61,9 @@ export function ChatView() {
       <div className="flex-1 overflow-y-auto px-5 sm:px-8">
         <div className="mx-auto w-full max-w-2xl pb-6">
           {empty ? (
-            <EmptyState onPick={(t) => send(t)} />
+            <EmptyState onPick={(t) => send(t)}>
+              <AdvisorPanel onPick={(t) => send(t)} />
+            </EmptyState>
           ) : (
             <div className="flex flex-col gap-6 pt-4">
               {messages.map((m) => (
@@ -86,7 +89,13 @@ export function ChatView() {
   );
 }
 
-function EmptyState({ onPick }: { onPick: (text: string) => void }) {
+function EmptyState({
+  onPick,
+  children,
+}: {
+  onPick: (text: string) => void;
+  children?: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col items-center pt-12 text-center sm:pt-20">
       <span className="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-caramel-400 to-clay-500 text-espresso-975 shadow-sm">
@@ -121,6 +130,8 @@ function EmptyState({ onPick }: { onPick: (text: string) => void }) {
           </button>
         ))}
       </div>
+
+      {children}
     </div>
   );
 }

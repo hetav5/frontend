@@ -16,6 +16,7 @@ import {
 } from "./mock";
 import { mockDashboard } from "./mock-dashboard";
 import type {
+  AdvisorBriefing,
   AgentEvent,
   CampaignAnalytics,
   CampaignDetail,
@@ -225,6 +226,33 @@ export async function launchCampaign(id: string): Promise<LaunchResult> {
   });
   if (!res.ok) throw new Error(`Launch failed: ${res.status}`);
   return res.json() as Promise<LaunchResult>;
+}
+
+// ---- Advisor ----
+export async function getAdvisorBriefing(): Promise<AdvisorBriefing> {
+  if (IS_MOCK) {
+    await new Promise((r) => setTimeout(r, 1000));
+    return {
+      generatedAt: new Date().toISOString(),
+      audience: { total: 2000, active: 920, lapsed: 500, vip: 300, new: 280 },
+      briefing: {
+        trends: [
+          { title: "Single-origin storytelling", detail: "Shoppers increasingly want provenance and tasting notes, not just 'dark roast'." },
+          { title: "Subscription & replenishment", detail: "Auto-replenish nudges timed to run-out windows lift repeat rate in coffee D2C." },
+          { title: "WhatsApp over email for re-engagement", detail: "Conversational channels are seeing higher open/response for win-back." },
+        ],
+        competitorMoves: [
+          { title: "Seasonal limited drops", detail: "Competitors use scarcity (small-batch, time-boxed) to drive urgency." },
+          { title: "Tiered loyalty perks", detail: "Early access and free shipping for top spenders to protect VIP retention." },
+        ],
+        opportunities: [
+          { title: "Win back 500 lapsed buyers", detail: "You have 500 customers inactive 60+ days — a time-boxed comeback offer fits.", priority: "high" },
+          { title: "Reward 300 VIPs", detail: "Give your 6+ order customers early access to the next drop.", priority: "medium" },
+        ],
+      },
+    };
+  }
+  return getJSON<AdvisorBriefing>("/advisor/briefing");
 }
 
 // ---- Dashboard ----

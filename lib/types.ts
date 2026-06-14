@@ -119,6 +119,34 @@ export interface CustomerPage {
   nextCursor: string | null;
 }
 
+// ---- AI strategy advisor ----
+export interface AudienceSnapshot {
+  total: number;
+  active: number;
+  lapsed: number;
+  vip: number;
+  new: number;
+}
+
+export interface BriefingItem {
+  title: string;
+  detail: string;
+}
+
+export interface OpportunityItem extends BriefingItem {
+  priority: "high" | "medium" | "low";
+}
+
+export interface AdvisorBriefing {
+  generatedAt: string;
+  audience: AudienceSnapshot;
+  briefing: {
+    trends: BriefingItem[];
+    competitorMoves: BriefingItem[];
+    opportunities: OpportunityItem[];
+  };
+}
+
 // ---- Campaign AI performance review ----
 export interface CampaignMetrics {
   audience: number;
