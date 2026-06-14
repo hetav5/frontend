@@ -33,7 +33,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-dvh w-full items-center justify-center px-5 py-10">
-      <div className="w-full max-w-[400px]">
+      <div className="w-full max-w-[400px] animate-rise">
         <div className="mb-7 flex flex-col items-center text-center">
           <span className="mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-caramel-400 to-clay-500 text-espresso-975 shadow-sm">
             <Coffee size={24} strokeWidth={2.25} />

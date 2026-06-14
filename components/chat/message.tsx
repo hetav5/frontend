@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, AlertTriangle } from "lucide-react";
 import type { ThreadMessage } from "./use-agent-chat";
 import { ToolResultCard } from "@/components/cards/tool-result-card";
 
@@ -74,6 +74,17 @@ export function Message({ message }: { message: ThreadMessage }) {
                 text={part.text}
                 streaming={message.streaming && i === message.parts.length - 1}
               />
+            );
+          }
+          if (part.type === "error") {
+            return (
+              <div
+                key={i}
+                className="flex items-start gap-2.5 rounded-xl border border-clay-500/25 bg-clay-500/[0.07] px-3.5 py-3 text-[13.5px] leading-relaxed text-clay-300"
+              >
+                <AlertTriangle size={16} className="mt-0.5 shrink-0 text-clay-400" />
+                <span>{part.text}</span>
+              </div>
             );
           }
           return <ToolResultCard key={i} result={part.result} />;

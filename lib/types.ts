@@ -244,7 +244,8 @@ export interface DashboardData {
 // ---- Conversation reload ----
 export type MessagePart =
   | { type: "text"; text: string }
-  | { type: "tool"; result: ToolResult };
+  | { type: "tool"; result: ToolResult }
+  | { type: "error"; text: string };
 
 export interface ConversationMessage {
   role: "user" | "assistant";

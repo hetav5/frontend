@@ -12,7 +12,7 @@ export function PageHeader({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="border-b border-crema-200/8 bg-espresso-950/40 px-5 py-4 sm:px-8 sm:py-5">
+    <div className="border-b border-crema-200/8 bg-espresso-950/70 px-5 py-4 backdrop-blur-xl sm:px-8 sm:py-5 lg:sticky lg:top-0 lg:z-20">
       {crumb && crumb.length > 0 && (
         <nav className="mb-1.5 flex items-center gap-1 text-[11.5px] text-crema-300/40">
           {crumb.map((c, i) => (

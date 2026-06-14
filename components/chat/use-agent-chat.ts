@@ -100,7 +100,13 @@ export function useAgentChat() {
             finish();
           },
           onError: (message) => {
-            appendToken(`\n\n⚠️ ${message}`);
+            setMessages((m) =>
+              m.map((msg) =>
+                msg.id === assistantId
+                  ? { ...msg, parts: [...msg.parts, { type: "error", text: message }] }
+                  : msg
+              )
+            );
             finish();
           },
         },

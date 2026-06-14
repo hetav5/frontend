@@ -196,7 +196,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         />
       )}
 
-      <main className="flex min-h-dvh w-full flex-1 flex-col pt-12 lg:pt-0">{children}</main>
+      <main key={pathname} className="flex min-h-dvh w-full flex-1 flex-col pt-12 animate-rise lg:pt-0">
+        {children}
+      </main>
     </div>
   );
 }
