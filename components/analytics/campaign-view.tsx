@@ -13,6 +13,7 @@ import { Panel } from "@/components/ui/panel";
 import { MultiLine } from "@/components/charts/chart-kit";
 import { FunnelChart } from "./funnel-chart";
 import { Stat } from "./stat";
+import { PerformanceReview } from "./performance-review";
 
 const POLL_MS = 2000;
 
@@ -167,6 +168,9 @@ export function CampaignView({ id }: { id: string }) {
             )}
           </Panel>
         </div>
+
+        {/* Autonomous AI performance review */}
+        <PerformanceReview campaignId={id} />
       </div>
     </div>
   );

@@ -119,6 +119,46 @@ export interface CustomerPage {
   nextCursor: string | null;
 }
 
+// ---- Campaign AI performance review ----
+export interface CampaignMetrics {
+  audience: number;
+  sent: number;
+  delivered: number;
+  opened: number;
+  read: number;
+  clicked: number;
+  failed: number;
+  deliveryRate: number;
+  openRate: number;
+  clickRate: number;
+  failureRate: number;
+  conversionRate: number;
+  attributedOrders: number;
+  attributedRevenue: number;
+}
+
+export interface CampaignRecommendation {
+  action: string;
+  rationale: string;
+  priority: "high" | "medium" | "low";
+}
+
+export interface CampaignAnalysis {
+  headline: string;
+  summary: string;
+  assessment: "strong" | "moderate" | "weak";
+  highlights: string[];
+  concerns: string[];
+  recommendations: CampaignRecommendation[];
+}
+
+export interface CampaignInsights {
+  generatedAt: string;
+  daysSinceLaunch: number;
+  metrics: CampaignMetrics;
+  analysis: CampaignAnalysis;
+}
+
 // ---- Dashboard ----
 export type KpiFormat = "currency" | "number" | "percent";
 

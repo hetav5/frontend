@@ -19,6 +19,7 @@ import type {
   AgentEvent,
   CampaignAnalytics,
   CampaignDetail,
+  CampaignInsights,
   CampaignSummary,
   CustomerPage,
   DashboardData,
@@ -182,6 +183,35 @@ export async function getCampaignAnalytics(
 ): Promise<CampaignAnalytics> {
   if (IS_MOCK) return mockAnalyticsAt(tick);
   return getJSON<CampaignAnalytics>(`/campaigns/${id}/analytics`);
+}
+
+export async function getCampaignInsights(id: string): Promise<CampaignInsights> {
+  if (IS_MOCK) {
+    await new Promise((r) => setTimeout(r, 900));
+    return {
+      generatedAt: new Date().toISOString(),
+      daysSinceLaunch: 6,
+      metrics: {
+        audience: 412, sent: 412, delivered: 396, opened: 241, read: 188,
+        clicked: 89, failed: 16, deliveryRate: 96.1, openRate: 60.9,
+        clickRate: 22.5, failureRate: 3.9, conversionRate: 7.3,
+        attributedOrders: 29, attributedRevenue: 48230,
+      },
+      analysis: {
+        headline: "Solid engagement, but conversion has room to grow.",
+        summary:
+          "Six days in, the campaign delivered cleanly (96%) and earned a strong 60.9% open rate, but only 7.3% of delivered messages converted to orders.",
+        assessment: "moderate",
+        highlights: ["96% delivery rate", "Open rate well above email benchmarks"],
+        concerns: ["Click-to-order drop-off", "16 hard failures worth investigating"],
+        recommendations: [
+          { action: "Add a time-bound incentive to the CTA", rationale: "High opens but low conversion suggests weak urgency.", priority: "high" },
+          { action: "Retarget the 152 who opened but didn't click", rationale: "Warm audience, cheap second touch.", priority: "medium" },
+        ],
+      },
+    };
+  }
+  return getJSON<CampaignInsights>(`/campaigns/${id}/insights`);
 }
 
 export async function launchCampaign(id: string): Promise<LaunchResult> {
